@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>卷积神经网络完整演进史</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .era {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .model {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            background-color: #f8f9fa;
+        }
+
+        .model h3 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+
+        .keyword {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            /* 将时间轴线固定在左侧 */
+            width: 2px;
+            height: 100%;
+            background: #3498db;
+        }
+
+        .timeline-node {
+            position: relative;
+            width: auto;
+            margin-left: 90px;
+            /* 给左侧留出空间 */
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            clear: both;
+            /* 确保每个节点独立成行 */
+        }
+
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            left: -25px;
+            /* 调整小圆点位置 */
+            top: 24px;
+            width: 10px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 50%;
+        }
+
+        .left::after {
+            right: -28px;
+        }
+
+        .right::after {
+            left: -28px;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .timeline {
+                padding-left: 20px;
+            }
+
+            .timeline::before {
+                left: 20px;
+                /* 小屏幕左侧对齐 */
+            }
+
+            .timeline-node {
+                margin-left: 40px;
+            }
+
+            .timeline-node::after {
+                left: -15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>卷积神经网络完整演进史</h1>
+
+    <!-- 早期奠基者 -->
+    <div class="era">
+        <h2>📜 早期奠基者 (1998-2011)</h2>
+        <div class="model">
+            <h3>LeNet-5 (1998)</h3>
+            <ul>
+                <li>创始人：Yann LeCun</li>
+                <li>核心结构：<span class="keyword">卷积层 → 平均池化层 → 全连接</span></li>
+                <li>应用场景：银行支票手写数字识别</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 深度学习复兴 -->
+    <div class="era">
+        <h2>🚀 深度学习复兴 (2012-2014)</h2>
+        <div class="model">
+            <h3>AlexNet (2012)</h3>
+            <ul>
+                <li>突破技术：<span class="keyword">ReLU激活函数、Dropout正则化、双GPU并行</span></li>
+                <li>ImageNet Top-5错误率：15.3%（相比传统方法降低41%）</li>
+            </ul>
+        </div>
+
+        <div class="model">
+            <h3>VGGNet (2014)</h3>
+            <ul>
+                <li>核心设计：<span class="keyword">连续3×3卷积核堆叠</span></li>
+                <li>深度版本：VGG-16（13卷积层+3全连接）</li>
+                <li>参数量：1.38亿，成为特征提取基准模型</li>
+            </ul>
+        </div>
+
+        <div class="model">
+            <h3>GoogLeNet (2014)</h3>
+            <ul>
+                <li>革命性结构：<span class="keyword">Inception模块（多尺度并行卷积）</span></li>
+                <li>参数量：仅500万（AlexNet的1/12）</li>
+                <li>辅助分类器：缓解梯度消失问题</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 深度突破 -->
+    <div class="era">
+        <h2>🏗️ 深度突破 (2015-2016)</h2>
+        <div class="model">
+            <h3>ResNet (2015)</h3>
+            <ul>
+                <li>里程碑技术：<span class="keyword">残差连接（Skip Connection）</span></li>
+                <li>网络深度：152层（ResNet-152）</li>
+                <li>ImageNet错误率：3.57%（首次超越人类水平）</li>
+            </ul>
+        </div>
+
+        <div class="model">
+            <h3>Inception-v3 (2015)</h3>
+            <ul>
+                <li>结构优化：<span class="keyword">分解卷积（Factorization）</span></li>
+                <li>将大卷积分解为小卷积序列（如5×5→两个3×3）</li>
+                <li>Top-5错误率：4.2%</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 高效架构 -->
+    <div class="era">
+        <h2>📱 高效架构 (2017-2019)</h2>
+        <div class="model">
+            <h3>MobileNet-v1 (2017)</h3>
+            <ul>
+                <li>核心技术：<span class="keyword">深度可分离卷积（Depthwise Separable Conv）</span></li>
+                <li>计算量：仅AlexNet的1/50</li>
+                <li>适用场景：移动端实时推理（>100 FPS）</li>
+            </ul>
+        </div>
+
+        <div class="model">
+            <h3>DenseNet (2017)</h3>
+            <ul>
+                <li>连接方式：<span class="keyword">密集块（每层连接前面所有层）</span></li>
+                <li>参数量：比ResNet少50%</li>
+                <li>特征复用：缓解梯度消失问题</li>
+            </ul>
+        </div>
+
+        <div class="model">
+            <h3>EfficientNet (2019)</h3>
+            <ul>
+                <li>缩放方法：<span class="keyword">复合缩放（深度/宽度/分辨率联合优化）</span></li>
+                <li>最高精度：EfficientNet-B7（84.4% Top-1）</li>
+                <li>效率优势：参数量减少8.4倍，速度提升6.1倍</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 时间轴演进 -->
+    <h2>⏳ 时间轴演进</h2>
+    <div class="timeline">
+        <div class="timeline-node">
+            <h3>1998</h3>
+            <p>LeNet-5 - CNN鼻祖</p>
+        </div>
+        
+        <div class="timeline-node">
+            <h3>2012</h3>
+            <p>AlexNet - 深度学习复兴</p>
+        </div>
+        
+        <div class="timeline-node">
+            <h3>2014</h3>
+            <p>VGGNet - 小卷积堆叠<br>GoogLeNet - Inception模块</p>
+        </div>
+        <div class="timeline-node">
+            <h3>2015</h3>
+            <p>ResNet - 残差学习<br>Inception-v3 - 分解卷积</p>
+        </div>
+        <div class="timeline-node">
+            <h3>2017</h3>
+            <p>MobileNet - 移动端优化<br>DenseNet - 密集连接</p>
+        </div>
+        <div class="timeline-node">
+            <h3>2019</h3>
+            <p>EfficientNet - 复合缩放</p>
+        </div>
+        <div class="timeline-node">
+            <h3>2020</h3>
+            <p>Vision Transformer - 无卷积模型</p>
+        </div>
+    </div>
+
+    <!-- 论文资源 -->
+    <div class="era">
+        <h2>🔗 关键论文资源</h2>
+        <ul>
+            <li>AlexNet: <a
+                    href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf"
+                    target="_blank">ImageNet Classification with Deep CNN</a></li>
+            <li>ResNet: <a href="https://arxiv.org/abs/1512.03385" target="_blank">Deep Residual Learning</a></li>
+            <li>EfficientNet: <a href="https://arxiv.org/abs/1905.11946" target="_blank">Rethinking Model Scaling</a>
+            </li>
+            <li>ViT: <a href="https://arxiv.org/abs/2010.11929" target="_blank">An Image is Worth 16x16 Words</a></li>
+        </ul>
+    </div>
+
+    <!-- 代码示例 -->
+    <div class="era">
+        <h2>🛠️ 关键代码实现</h2>
+        <h3>ResNet残差块（PyTorch）</h3>
+        <pre><code>class ResidualBlock(nn.Module):
+    def __init__(self, in_channels):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels, in_channels, 3, padding=1)
+        self.bn1 = nn.BatchNorm2d(in_channels)
+        self.conv2 = nn.Conv2d(in_channels, in_channels, 3, padding=1)
+        self.bn2 = nn.BatchNorm2d(in_channels)
+        
+    def forward(self, x):
+        residual = x
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = self.bn2(self.conv2(x))
+        x += residual
+        return F.relu(x)</code></pre>
+
+        <h3>MobileNet深度可分离卷积（TensorFlow）</h3>
+        <pre><code>class DepthwiseSeparableConv(tf.keras.layers.Layer):
+    def __init__(self, filters, stride):
+        super().__init__()
+        self.depthwise = tf.keras.layers.DepthwiseConv2D(
+            kernel_size=3, strides=stride, padding='same')
+        self.pointwise = tf.keras.layers.Conv2D(filters, 1, strides=1)
+    
+    def call(self, inputs):
+        x = self.depthwise(inputs)
+        return self.pointwise(x)</code></pre>
+    </div>
+</body>
+
+</html>
