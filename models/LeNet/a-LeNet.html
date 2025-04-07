@@ -1,0 +1,2783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeNet 变体模型全景图</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --dark-bg: #2c3e50;
+            --light-bg: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            max-width: 600px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .filter-tag {
+            background: var(--light-bg);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-tag.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 10px;
+            transition: transform 0.3s;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .card-content {
+            padding: 20px;
+            display: none;
+            background: #fff;
+        }
+
+        .card-content.active {
+            display: block;
+        }
+
+        .model-details-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .model-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .performance-item {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .advantages-list, .disadvantages-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .advantages-list li::before {
+            content: '✓';
+            color: green;
+            margin-right: 8px;
+        }
+
+        .disadvantages-list li::before {
+            content: '×';
+            color: red;
+            margin-right: 8px;
+        }
+
+        .tech-details {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .tech-details p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .category-filter {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        .category-section {
+            margin: 30px 0;
+        }
+
+        .category-section h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .category-section h2::after {
+            content: '▼';
+            font-size: 0.8em;
+            transition: transform 0.3s;
+        }
+
+        .category-section.collapsed h2::after {
+            transform: rotate(-90deg);
+        }
+
+        .category-section.collapsed .model-card {
+            display: none;
+        }
+
+        .model-card {
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LeNet 变体模型全景图</h1>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索模型...">
+        </div>
+
+        <div class="category-filter">
+            <div class="filter-tag active" data-category="all">全部</div>
+            <div class="filter-tag" data-category="基础模型">基础模型</div>
+            <div class="filter-tag" data-category="结构改进">结构改进</div>
+            <div class="filter-tag" data-category="激活函数">激活函数</div>
+            <div class="filter-tag" data-category="轻量化">轻量化</div>
+            <div class="filter-tag" data-category="多模态">多模态</div>
+            <div class="filter-tag" data-category="动态网络">动态网络</div>
+            <div class="filter-tag" data-category="理论优化">理论优化</div>
+            <div class="filter-tag" data-category="跨域适应">跨域适应</div>
+            <div class="filter-tag" data-category="数据增强">数据增强</div>
+            <div class="filter-tag" data-category="目标检测">目标检测</div>
+            <div class="filter-tag" data-category="小样本学习">小样本学习</div>
+            <div class="filter-tag" data-category="生成对抗">生成对抗</div>
+            <div class="filter-tag" data-category="部署优化">部署优化</div>
+        </div>
+
+        <div id="modelsContainer"></div>
+    </div>
+
+    <script>
+        const models = [
+            // 基础模型
+            {
+                category: '基础模型',
+                title: 'LeNet-4',
+                file: 'LeNet-4.py',
+                details: ['初代版本', '3层结构'],
+                extendedInfo: {
+                    architecture: {
+                        description: 'LeNet-4是最初的LeNet版本，专为手写数字识别设计，采用3层结构',
+                        layers: [
+                            'Conv1(4@28x28) → Sigmoid → AvgPool1(4@14x14)',
+                            'Conv2(12@10x10) → Sigmoid → AvgPool2(12@5x5)',
+                            'FC(10) → Softmax'
+                        ]
+                    },
+                    advantages: [
+                        '结构简单，易于实现',
+                        '计算资源需求低',
+                        '训练速度快',
+                        '适合教学演示'
+                    ],
+                    disadvantages: [
+                        '特征提取能力有限',
+                        'Sigmoid激活函数易导致梯度消失',
+                        '网络深度不足',
+                        '泛化能力较弱'
+                    ],
+                    applications: [
+                        '手写数字识别',
+                        '简单图像分类',
+                        '教学演示',
+                        '资源受限场景'
+                    ],
+                    performance: {
+                        accuracy: '98.1% on MNIST',
+                        parameters: '35K',
+                        flops: '2.3M',
+                        speed: '1.5ms/batch'
+                    }
+                }
+            },
+            {
+                category: '基础模型',
+                title: 'LeNet-5',
+                file: 'LeNet-5.py',
+                details: ['经典架构', '7层网络'],
+                extendedInfo: {
+                    architecture: {
+                        description: 'LeNet-5是卷积神经网络的开山之作，由Yann LeCun等人在1998年提出，广泛用于图像识别任务',
+                        layers: [
+                            'Conv1(6@28x28) → Tanh → AvgPool1(6@14x14)',
+                            'Conv2(16@10x10) → Tanh → AvgPool2(16@5x5)',
+                            'Conv3(120@1x1)',
+                            'FC1(84) → Tanh',
+                            'FC2(10) → Softmax'
+                        ]
+                    },
+                    advantages: [
+                        '层次分明的特征提取结构',
+                        '局部感受野的空间共享机制',
+                        '权值共享减少参数数量',
+                        '为现代CNN奠定基础'
+                    ],
+                    disadvantages: [
+                        'Tanh激活函数存在梯度消失问题',
+                        '网络深度相对较浅',
+                        '特征表达能力有限',
+                        '难以处理复杂场景'
+                    ],
+                    applications: [
+                        '手写数字识别',
+                        '文档字符识别',
+                        '简单目标检测',
+                        '工业视觉检测'
+                    ],
+                    performance: {
+                        accuracy: '98.9% on MNIST',
+                        parameters: '60K',
+                        flops: '3.2M',
+                        speed: '1.8ms/batch'
+                    }
+                }
+            },
+            // 结构改进
+            {
+                category: '结构改进',
+                title: 'ResLeNet',
+                file: 'LeNet-Residual.py',
+                details: ['残差连接', '梯度消失解决'],
+                extendedInfo: {
+                    architecture: {
+                        description: '在LeNet基础上引入残差连接，解决深层网络训练问题',
+                        layers: [
+                            'Conv1(6@28x28) → ReLU',
+                            'Residual Block 1(16@14x14)',
+                            'Residual Block 2(32@7x7)',
+                            'FC1(120) → ReLU',
+                            'FC2(84) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '解决梯度消失问题',
+                        '支持更深层网络训练',
+                        '特征重用提高效率'
+                    ],
+                    disadvantages: [
+                        '参数量略有增加',
+                        '推理时间相对增加'
+                    ],
+                    applications: [
+                        '复杂图像分类',
+                        '特征提取任务',
+                        '迁移学习基础网络'
+                    ],
+                    performance: {
+                        accuracy: '99.2% on MNIST',
+                        parameters: '62K',
+                        flops: '4.5M',
+                        speed: '2.3ms/batch'
+                    }
+                }
+            },
+            {
+                category: '结构改进',
+                title: 'DenseLeNet',
+                file: 'DenseLeNet.py',
+                details: ['密集连接', '特征复用增强'],
+                extendedInfo: {
+                    architecture: {
+                        description: '采用密集连接模式，增强特征复用，每一层都直接与其后的所有层相连',
+                        layers: [
+                            'Input(1@32x32)',
+                            'Dense Block 1(32@28x28)',
+                            'Transition Layer 1(16@14x14)',
+                            'Dense Block 2(64@14x14)',
+                            'Transition Layer 2(32@7x7)',
+                            'Global Average Pooling',
+                            'FC(10) → Softmax'
+                        ]
+                    },
+                    advantages: [
+                        '特征重用效率高',
+                        '参数利用率提升',
+                        '缓解梯度消失',
+                        '加强特征传播'
+                    ],
+                    disadvantages: [
+                        '内存占用相对较大',
+                        '计算复杂度增加',
+                        '训练时间延长'
+                    ],
+                    applications: [
+                        '高精度图像分类',
+                        '特征提取任务',
+                        '小数据集训练',
+                        '多尺度特征融合'
+                    ],
+                    performance: {
+                        accuracy: '99.4% on MNIST',
+                        parameters: '80K',
+                        flops: '5.2M',
+                        speed: '2.8ms/batch'
+                    }
+                }
+            },
+            {
+                category: '结构改进',
+                title: 'LeNet-7',
+                file: 'LeNet-7.py',
+                details: ['7层结构', '批量归一化'],
+                extendedInfo: {
+                    architecture: {
+                        description: 'LeNet的扩展版本，具有更深的网络结构，增加了层数和批量归一化',
+                        layers: [
+                            'Conv1(6@28x28) → BN → ReLU',
+                            'Conv2(8@24x24) → BN → ReLU',
+                            'MaxPool1(8@12x12)',
+                            'Conv3(16@8x8) → BN → ReLU',
+                            'Conv4(32@4x4) → BN → ReLU',
+                            'MaxPool2(32@2x2)',
+                            'FC1(120) → ReLU',
+                            'FC2(84) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '特征提取能力增强',
+                        '批归一化提高训练稳定性',
+                        '收敛速度更快',
+                        '适应复杂数据分布'
+                    ],
+                    disadvantages: [
+                        '参数量增加',
+                        '计算开销增大',
+                        '需要更多训练数据',
+                        '过拟合风险增加'
+                    ],
+                    applications: [
+                        '复杂图像分类',
+                        '细粒度特征识别',
+                        '高分辨率图像处理',
+                        '多类别分类任务'
+                    ],
+                    performance: {
+                        accuracy: '99.3% on MNIST',
+                        parameters: '102K',
+                        flops: '6.8M',
+                        speed: '3.1ms/batch'
+                    }
+                }
+            },
+            {
+                category: '结构改进',
+                title: 'Neural-Architecture-Search-LeNet',
+                file: 'Neural-Architecture-Search-LeNet.py',
+                details: ['NAS优化', '自动架构搜索'],
+                extendedInfo: {
+                    architecture: {
+                        description: '通过神经架构搜索自动优化的LeNet变体，使用强化学习或进化算法搜索最佳网络配置',
+                        layers: [
+                            'Input Layer(1@32x32)',
+                            'Search Space Block 1(channels: 4-32)',
+                            'Search Space Block 2(channels: 8-64)',
+                            'Search Space Block 3(channels: 16-128)',
+                            'Global Pooling(Adaptive)',
+                            'FC Layers(Search: 64-512 units)',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '自动发现最优网络结构',
+                        '针对特定任务优化',
+                        '减少人工设计成本',
+                        '可以发现非直觉的高效结构'
+                    ],
+                    disadvantages: [
+                        '搜索过程计算开销大',
+                        '需要大量GPU资源',
+                        '搜索空间设计至关重要',
+                        '可能过度适应特定数据集'
+                    ],
+                    applications: [
+                        '自动化模型设计',
+                        '特定任务架构优化',
+                        '硬件感知模型设计',
+                        '资源受限场景的结构优化'
+                    ],
+                    performance: {
+                        accuracy: '99.6% on MNIST',
+                        parameters: '76K',
+                        search_time: '24 GPU hours',
+                        flops: '4.2M'
+                    }
+                }
+            },
+            // 激活函数
+            {
+                category: '激活函数',
+                title: 'LeNet-ReLU',
+                file: 'LeNet-ReLU.py',
+                details: ['ReLU替换Sigmoid', '训练加速40%'],
+                extendedInfo: {
+                    architecture: {
+                        description: '使用ReLU激活函数替代传统Sigmoid函数，显著提升训练速度和模型性能',
+                        layers: [
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → ReLU',
+                            'FC2(84) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '训练速度提升40%',
+                        '缓解梯度消失问题',
+                        '计算复杂度低',
+                        '收敛速度快'
+                    ],
+                    disadvantages: [
+                        '可能出现神经元死亡',
+                        '输出不是零中心化',
+                        '负半区信息丢失'
+                    ],
+                    applications: [
+                        '深度网络训练加速',
+                        '实时图像处理',
+                        '资源受限设备部署',
+                        '大规模数据集训练'
+                    ],
+                    performance: {
+                        accuracy: '98.9% on MNIST',
+                        training_speedup: '40%',
+                        parameters: '60K',
+                        speed: '1.9ms/batch'
+                    }
+                }
+            },
+            {
+                category: '激活函数',
+                title: 'LeNet-ELU',
+                file: 'LeNet-ELU.py',
+                details: ['负值平滑', '梯度优化'],
+                extendedInfo: {
+                    architecture: {
+                        description: '采用ELU(Exponential Linear Unit)激活函数改进网络收敛性，通过负值区域的平滑过渡提升模型性能',
+                        layers: [
+                            'Conv1(6@28x28) → ELU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ELU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → ELU',
+                            'FC2(84) → ELU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '避免死亡ReLU问题',
+                        '输出均值接近零',
+                        '对噪声更鲁棒',
+                        '梯度更平滑'
+                    ],
+                    disadvantages: [
+                        '计算复杂度较高',
+                        '需要额外的α参数',
+                        '训练时间略长',
+                        'GPU优化相对较少'
+                    ],
+                    applications: [
+                        '深度网络优化',
+                        '噪声敏感任务',
+                        '需要精确梯度的场景',
+                        '防止过拟合场景'
+                    ],
+                    performance: {
+                        accuracy: '99.1% on MNIST',
+                        training_stability: 'Higher than ReLU',
+                        parameters: '60K',
+                        speed: '2.1ms/batch'
+                    }
+                }
+            },
+            {
+                category: '激活函数',
+                title: 'LeNet-PReLU',
+                file: 'LeNet-PReLU.py',
+                details: ['参数化ReLU', '自适应负斜率'],
+                extendedInfo: {
+                    architecture: {
+                        description: '参数化ReLU激活函数的LeNet变体，通过可学习的参数自适应调整负半区的斜率',
+                        layers: [
+                            'Conv1(6@28x28) → PReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → PReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → PReLU',
+                            'FC2(84) → PReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '自适应负斜率',
+                        '避免神经元死亡',
+                        '提高模型表达能力',
+                        '训练更稳定'
+                    ],
+                    disadvantages: [
+                        '参数量略有增加',
+                        '需要更多训练数据',
+                        '计算开销略大'
+                    ],
+                    applications: [
+                        '深度网络训练',
+                        '复杂特征提取',
+                        '高精度分类任务'
+                    ],
+                    performance: {
+                        accuracy: '99.3% on MNIST',
+                        parameters: '61K',
+                        flops: '3.5M',
+                        speed: '2.0ms/batch'
+                    }
+                }
+            },
+            {
+                category: '激活函数',
+                title: 'LeNet-LeakyReLU',
+                file: 'LeNet-LeakyReLU.py',
+                details: ['负斜率', '防止死亡神经元'],
+                extendedInfo: {
+                    architecture: {
+                        description: '具有负斜率的LeakyReLU激活函数版本，为负区间提供小的固定斜率避免神经元完全失活',
+                        layers: [
+                            'Conv1(6@28x28) → LeakyReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → LeakyReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → LeakyReLU',
+                            'FC2(84) → LeakyReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '防止神经元死亡',
+                        '保留负区域信息',
+                        '改善梯度流动',
+                        '实现简单'
+                    ],
+                    disadvantages: [
+                        '负区间斜率固定',
+                        '非零中心化',
+                        '超参数选择敏感',
+                        '性能略低于PReLU'
+                    ],
+                    applications: [
+                        '通用分类任务',
+                        '图像生成模型',
+                        'GAN训练',
+                        '防止特征丢失场景'
+                    ],
+                    performance: {
+                        accuracy: '99.2% on MNIST',
+                        parameters: '60K',
+                        flops: '3.2M',
+                        speed: '1.9ms/batch'
+                    }
+                }
+            },
+            // 轻量化
+            {
+                category: '轻量化',
+                title: 'MobileLeNet',
+                file: 'MobileLeNet.py',
+                details: ['深度可分离卷积', '移动端优化'],
+                extendedInfo: {
+                    architecture: {
+                        description: '面向移动设备的轻量级LeNet优化版本，使用深度可分离卷积显著减少参数量和计算量',
+                        layers: [
+                            'DWConv1(6@28x28) → BN → ReLU',
+                            'PWConv1(6→12@28x28)',
+                            'MaxPool1(12@14x14)',
+                            'DWConv2(12@14x14) → BN → ReLU',
+                            'PWConv2(12→24@14x14)',
+                            'MaxPool2(24@7x7)',
+                            'FC(10)'
+                        ]
+                    },
+                    advantages: [
+                        '参数量减少90%',
+                        '计算量减少86%',
+                        '推理速度提升3倍',
+                        '移动端友好'
+                    ],
+                    disadvantages: [
+                        '精度略有下降',
+                        '训练时间增加',
+                        '需要特定硬件优化'
+                    ],
+                    applications: [
+                        '移动端部署',
+                        '边缘设备推理',
+                        '实时图像处理',
+                        'IoT应用'
+                    ],
+                    performance: {
+                        accuracy: '98.7% on MNIST',
+                        parameters: '8.5K',
+                        model_size: '34KB',
+                        inference_time: '0.8ms/image'
+                    }
+                }
+            },
+            {
+                category: '轻量化',
+                title: 'LeNet-Lite',
+                file: 'LeNet-Lite.py',
+                details: ['精简参数', '内存减少'],
+                extendedInfo: {
+                    architecture: {
+                        description: '精简版LeNet，减少参数量和计算量，适用于资源受限场景',
+                        layers: [
+                            'Conv1(4@28x28) → ReLU',
+                            'MaxPool1(4@14x14)',
+                            'Conv2(12@10x10) → ReLU',
+                            'MaxPool2(12@5x5)',
+                            'FC1(64) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '参数量小于10万',
+                        '内存占用小于5MB',
+                        '推理速度快',
+                        '适合低功耗设备'
+                    ],
+                    disadvantages: [
+                        '表达能力有限',
+                        '复杂任务性能下降',
+                        '需要细致调参'
+                    ],
+                    applications: [
+                        '嵌入式系统',
+                        '移动应用',
+                        '物联网设备',
+                        '实时处理系统'
+                    ],
+                    performance: {
+                        accuracy: '98.2% on MNIST',
+                        parameters: '9.8K',
+                        model_size: '39KB',
+                        inference_time: '0.6ms/image'
+                    }
+                }
+            },
+            {
+                category: '轻量化',
+                title: 'LiteLeNet',
+                file: 'LiteLeNet.py',
+                details: ['进一步压缩', '轻量架构'],
+                extendedInfo: {
+                    architecture: {
+                        description: '进一步压缩的轻量级LeNet结构，极致优化参数量和计算复杂度',
+                        layers: [
+                            'Conv1(4@28x28) → ReLU',
+                            'MaxPool1(4@14x14)',
+                            'Conv2(8@10x10) → ReLU',
+                            'MaxPool2(8@5x5)',
+                            'FC(10)'
+                        ]
+                    },
+                    advantages: [
+                        '极低参数量',
+                        '极小内存占用',
+                        '推理延迟极低',
+                        '低功耗'
+                    ],
+                    disadvantages: [
+                        '精度损失明显',
+                        '特征提取能力有限',
+                        '适用场景受限'
+                    ],
+                    applications: [
+                        '极度受限硬件',
+                        '实时边缘计算',
+                        '电池供电设备',
+                        '简单分类任务'
+                    ],
+                    performance: {
+                        accuracy: '97.8% on MNIST',
+                        parameters: '7.2K',
+                        model_size: '29KB',
+                        inference_time: '0.4ms/image'
+                    }
+                }
+            },
+            {
+                category: '轻量化',
+                title: 'LeNet-Thin',
+                file: 'LeNet-Thin.py',
+                details: ['通道数减少', '计算量优化'],
+                extendedInfo: {
+                    architecture: {
+                        description: '减少通道数的薄型LeNet变体，保持基本结构的同时显著降低计算量',
+                        layers: [
+                            'Conv1(4@28x28) → ReLU',
+                            'MaxPool1(4@14x14)',
+                            'Conv2(8@10x10) → ReLU',
+                            'MaxPool2(8@5x5)',
+                            'FC1(60) → ReLU',
+                            'FC2(42) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '参数量减少50%',
+                        '计算量降低60%',
+                        '推理速度提升',
+                        '内存占用减少'
+                    ],
+                    disadvantages: [
+                        '精度略有下降',
+                        '特征提取能力减弱',
+                        '需要更多训练技巧'
+                    ],
+                    applications: [
+                        '移动端部署',
+                        '边缘计算设备',
+                        '实时推理场景',
+                        '资源受限环境'
+                    ],
+                    performance: {
+                        accuracy: '98.5% on MNIST',
+                        parameters: '15K',
+                        flops: '1.2M',
+                        speed: '0.8ms/batch',
+                        memory: '60KB'
+                    }
+                }
+            },
+            {
+                category: '轻量化',
+                title: 'LeNet-Mini',
+                file: 'LeNet-Mini.py',
+                details: ['极简结构', '最小复杂度'],
+                extendedInfo: {
+                    architecture: {
+                        description: '参数量和计算复杂度最小的LeNet版本，极度简化的网络结构',
+                        layers: [
+                            'Conv1(3@28x28) → ReLU',
+                            'MaxPool1(3@14x14)',
+                            'Conv2(6@10x10) → ReLU',
+                            'MaxPool2(6@5x5)',
+                            'FC(10)'
+                        ]
+                    },
+                    advantages: [
+                        '最小参数量',
+                        '最低计算复杂度',
+                        '最快推理速度',
+                        '最少内存占用'
+                    ],
+                    disadvantages: [
+                        '精度牺牲较大',
+                        '特征表达能力弱',
+                        '只适用于简单任务',
+                        '鲁棒性有限'
+                    ],
+                    applications: [
+                        '微控制器部署',
+                        '超低功耗设备',
+                        '基本图像分类',
+                        '极简硬件环境'
+                    ],
+                    performance: {
+                        accuracy: '97.1% on MNIST',
+                        parameters: '4.3K',
+                        model_size: '17KB',
+                        inference_time: '0.3ms/image'
+                    }
+                }
+            },
+            // 多模态
+            {
+                category: '多模态',
+                title: 'LeNet-CNN-RNN',
+                file: 'LeNet-CNN-RNN.py',
+                details: ['结合CNN和RNN', '序列图像处理'],
+                extendedInfo: {
+                    architecture: {
+                        description: '结合CNN和RNN处理序列图像数据，能够捕获时空特征',
+                        layers: [
+                            'CNN: LeNet Feature Extractor',
+                            'Feature Sequence',
+                            'RNN/LSTM Layers',
+                            'Temporal Pooling',
+                            'FC Layers',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '捕获时空依赖关系',
+                        '序列数据处理能力',
+                        '长期依赖建模',
+                        '动态行为识别'
+                    ],
+                    disadvantages: [
+                        '计算复杂度高',
+                        '训练难度大',
+                        '参数量增加',
+                        '需要更多训练数据'
+                    ],
+                    applications: [
+                        '视频分析',
+                        '动作识别',
+                        '手势识别',
+                        '时序特征提取'
+                    ],
+                    performance: {
+                        accuracy: '96.5% on Action',
+                        parameters: '120K',
+                        flops: '8.2M',
+                        speed: '4.5ms/batch'
+                    }
+                }
+            },
+            {
+                category: '多模态',
+                title: 'LeNet-VisionTransformer',
+                file: 'LeNet-with-Transformer.py',
+                details: ['集成Transformer', '注意力机制'],
+                extendedInfo: {
+                    architecture: {
+                        description: '集成Transformer结构的混合视觉模型，结合CNN的局部特征和Transformer的全局注意力',
+                        layers: [
+                            'CNN Backbone: LeNet Feature Extractor',
+                            'Feature Tokenization',
+                            'Transformer Encoder Blocks',
+                            'Multi-Head Self-Attention',
+                            'MLP Head',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '全局依赖建模',
+                        '位置无关特征',
+                        '注意力机制',
+                        '表达能力强'
+                    ],
+                    disadvantages: [
+                        '计算复杂度高',
+                        '训练数据需求大',
+                        '参数量大',
+                        '推理速度较慢'
+                    ],
+                    applications: [
+                        '复杂场景理解',
+                        '图像分类',
+                        '视觉问答',
+                        '图像描述生成'
+                    ],
+                    performance: {
+                        accuracy: '99.4% on MNIST',
+                        parameters: '180K',
+                        flops: '12.5M',
+                        speed: '5.8ms/batch'
+                    }
+                }
+            },
+            {
+                category: '多模态',
+                title: 'VisionTransformer-LeNet',
+                file: 'VisionTransformer-LeNet.py',
+                details: ['Transformer主导', '全局注意力'],
+                extendedInfo: {
+                    architecture: {
+                        description: '以Transformer为主的混合架构，使用LeNet作为辅助特征提取器',
+                        layers: [
+                            'Image Patches',
+                            'Patch Embedding',
+                            'Transformer Encoder (6 layers)',
+                            'LeNet Feature Integration',
+                            'Classification Head',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '全局特征建模',
+                        '长距离依赖捕获',
+                        '可扩展性好',
+                        '集成CNN优势'
+                    ],
+                    disadvantages: [
+                        '计算资源需求高',
+                        '参数量庞大',
+                        '推理延迟长',
+                        '训练困难'
+                    ],
+                    applications: [
+                        '高级场景理解',
+                        '复杂语义分割',
+                        '图像描述',
+                        '细粒度分类'
+                    ],
+                    performance: {
+                        accuracy: '99.5% on MNIST',
+                        parameters: '220K',
+                        flops: '15.8M',
+                        speed: '7.2ms/batch'
+                    }
+                }
+            },
+            {
+                category: '多模态',
+                title: 'LeNet-Multimodal',
+                file: 'LeNet-Multimodal.py',
+                details: ['多模态输入', '特征融合'],
+                extendedInfo: {
+                    architecture: {
+                        description: '支持多模态输入的扩展LeNet版本，能够处理不同类型的数据输入并进行特征融合',
+                        layers: [
+                            'Image Branch: Conv1(6@28x28) → ReLU',
+                            'Text Branch: Embedding → LSTM',
+                            'Feature Fusion Layer',
+                            'FC1(120) → ReLU',
+                            'FC2(84) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '支持多模态输入',
+                        '特征互补增强',
+                        '适应复杂任务',
+                        '信息融合能力强'
+                    ],
+                    disadvantages: [
+                        '结构复杂度增加',
+                        '训练难度增大',
+                        '计算资源需求高',
+                        '需要更多训练数据'
+                    ],
+                    applications: [
+                        '多模态分类',
+                        '跨模态检索',
+                        '视觉问答系统',
+                        '多源信息融合'
+                    ],
+                    performance: {
+                        accuracy: '98.8% on MNIST',
+                        parameters: '85K',
+                        flops: '5.8M',
+                        speed: '3.2ms/batch'
+                    }
+                }
+            },
+            // 动态网络
+            {
+                category: '动态网络',
+                title: 'DynamicLeNet',
+                file: 'DynamicLeNet.py',
+                details: ['动态路由', '自适应结构'],
+                extendedInfo: {
+                    architecture: {
+                        description: '具有动态路由或动态深度的LeNet变体，能够根据输入自适应调整网络结构',
+                        layers: [
+                            'Input Layer',
+                            'Dynamic Routing Modules',
+                            'Conditional Execution Paths',
+                            'Adaptive Feature Aggregation',
+                            'Classification Head',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '自适应结构变化',
+                        '计算效率提升',
+                        '针对不同输入优化',
+                        '推理资源节约'
+                    ],
+                    disadvantages: [
+                        '实现复杂',
+                        '训练困难',
+                        '路由决策开销',
+                        '优化难度大'
+                    ],
+                    applications: [
+                        '动态计算场景',
+                        '资源受限环境',
+                        '多级别复杂度任务',
+                        '自适应推理系统'
+                    ],
+                    performance: {
+                        accuracy: '99.2% on MNIST',
+                        parameters: '65-85K',
+                        flops: '2.8-5.2M',
+                        speed: '1.2-3.5ms/batch'
+                    }
+                }
+            },
+            {
+                category: '动态网络',
+                title: 'AdaptiveLeNet',
+                file: 'AdaptiveLeNet.py',
+                details: ['自适应结构', '输入感知'],
+                extendedInfo: {
+                    architecture: {
+                        description: '自适应调整网络结构的LeNet版本，根据输入复杂度动态改变网络配置',
+                        layers: [
+                            'Input Analysis Module',
+                            'Complexity Estimation',
+                            'Adaptive Block 1',
+                            'Adaptive Block 2',
+                            'Dynamic Feature Integration',
+                            'Classification Head'
+                        ]
+                    },
+                    advantages: [
+                        '计算资源按需分配',
+                        '简单样本快速处理',
+                        '复杂样本深度处理',
+                        '总体效率提升'
+                    ],
+                    disadvantages: [
+                        '架构设计复杂',
+                        '训练策略特殊',
+                        '收敛难度增加',
+                        '部署要求高'
+                    ],
+                    applications: [
+                        '实时系统',
+                        '移动设备',
+                        '计算资源变化环境',
+                        '电池供电设备'
+                    ],
+                    performance: {
+                        accuracy: '99.0% on MNIST',
+                        efficiency_gain: '35-65%',
+                        parameters: '68K',
+                        avg_compute: '60% of full'
+                    }
+                }
+            },
+            {
+                category: '动态网络',
+                title: 'LeNet-DynamicDepth',
+                file: 'LeNet-DynamicDepth.py',
+                details: ['动态深度', '自适应计算'],
+                extendedInfo: {
+                    architecture: {
+                        description: '具有动态深度调整能力的变体，根据输入复杂度自适应调整网络深度',
+                        layers: [
+                            'Base Layers: Conv1 → ReLU → MaxPool1',
+                            'Dynamic Depth Block 1',
+                            'Dynamic Depth Block 2',
+                            'Adaptive Pooling',
+                            'FC Layers',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '计算资源自适应',
+                        '推理效率提升',
+                        '复杂样本处理能力强',
+                        '资源利用率高'
+                    ],
+                    disadvantages: [
+                        '训练难度大',
+                        '需要特殊优化器',
+                        '收敛速度较慢',
+                        '实现复杂度高'
+                    ],
+                    applications: [
+                        '实时图像处理',
+                        '资源受限场景',
+                        '动态计算需求',
+                        '自适应推理'
+                    ],
+                    performance: {
+                        accuracy: '99.1% on MNIST',
+                        parameters: '75K',
+                        flops: '3.8-6.2M',
+                        speed: '1.5-3.5ms/batch'
+                    }
+                }
+            },
+            // 理论优化
+            {
+                category: '理论优化',
+                title: 'QuantizedLeNet',
+                file: 'QuantizedLeNet.py',
+                details: ['INT8量化', '体积缩小'],
+                extendedInfo: {
+                    architecture: {
+                        description: '量化版本的LeNet，适用于低精度计算，显著减少模型大小和计算复杂度',
+                        layers: [
+                            'Conv1(6@28x28) → INT8 → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → INT8 → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → INT8 → ReLU',
+                            'FC2(84) → INT8 → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '模型体积缩小4倍',
+                        '推理速度提升',
+                        '内存占用减少',
+                        '硬件加速友好'
+                    ],
+                    disadvantages: [
+                        '精度略有损失',
+                        '需要量化感知训练',
+                        '实现复杂度增加',
+                        '需要特定硬件支持'
+                    ],
+                    applications: [
+                        '嵌入式设备部署',
+                        '移动应用',
+                        '低功耗硬件',
+                        '边缘计算'
+                    ],
+                    performance: {
+                        accuracy: '98.7% on MNIST',
+                        model_size: '15KB',
+                        speedup: '2.5x',
+                        memory: '60KB'
+                    }
+                }
+            },
+            {
+                category: '理论优化',
+                title: 'LeNet-BN',
+                file: 'LeNet-BN.py',
+                details: ['批量归一化', '训练稳定'],
+                extendedInfo: {
+                    architecture: {
+                        description: '加入批量归一化层的LeNet改进版本，显著提高训练稳定性和收敛速度',
+                        layers: [
+                            'Conv1(6@28x28) → BN → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → BN → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → BN → ReLU',
+                            'FC2(84) → BN → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '训练更稳定',
+                        '收敛速度加快',
+                        '减轻内部协变量偏移',
+                        '允许更高学习率'
+                    ],
+                    disadvantages: [
+                        '参数量略增',
+                        '推理计算增加',
+                        '小批量训练效果差',
+                        '需要存储统计信息'
+                    ],
+                    applications: [
+                        '快速训练场景',
+                        '深度网络',
+                        '不稳定梯度问题',
+                        '特征分布变化大的数据'
+                    ],
+                    performance: {
+                        accuracy: '99.2% on MNIST',
+                        convergence: '50% faster',
+                        parameters: '62K',
+                        speed: '2.0ms/batch'
+                    }
+                }
+            },
+            {
+                category: '理论优化',
+                title: 'StochasticLeNet',
+                file: 'LeNet-Stochastic-Depth.py',
+                details: ['随机深度', '泛化能力'],
+                extendedInfo: {
+                    architecture: {
+                        description: '引入随机性的正则化LeNet变体，训练时随机丢弃层，提升泛化能力',
+                        layers: [
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Stochastic Block 1',
+                            'Stochastic Block 2',
+                            'FC1(120) → ReLU',
+                            'FC2(84) → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '改善泛化能力',
+                        '隐式模型集成',
+                        '减轻过拟合',
+                        '训练更稳定'
+                    ],
+                    disadvantages: [
+                        '实现复杂',
+                        '调参难度增加',
+                        '需要更多训练轮次',
+                        '不确定性增加'
+                    ],
+                    applications: [
+                        '深度网络正则化',
+                        '过拟合风险高场景',
+                        '模型集成替代',
+                        '数据有限情况'
+                    ],
+                    performance: {
+                        accuracy: '99.3% on MNIST',
+                        generalization: '+1.5%',
+                        parameters: '60K',
+                        training_time: '+20%'
+                    }
+                }
+            },
+            {
+                category: '理论优化',
+                title: 'LeNet-Dropout',
+                file: 'LeNet-Dropout.py',
+                details: ['Dropout正则化', '防止过拟合'],
+                extendedInfo: {
+                    architecture: {
+                        description: '集成Dropout正则化技术的版本，通过随机丢弃神经元防止过拟合',
+                        layers: [
+                            'Conv1(6@28x28) → ReLU → Dropout(0.2)',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU → Dropout(0.3)',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120) → ReLU → Dropout(0.4)',
+                            'FC2(84) → ReLU → Dropout(0.5)',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '有效防止过拟合',
+                        '提高模型泛化能力',
+                        '实现简单',
+                        '计算开销小'
+                    ],
+                    disadvantages: [
+                        '训练时间增加',
+                        '需要调整超参数',
+                        '推理时关闭Dropout',
+                        '可能影响收敛速度'
+                    ],
+                    applications: [
+                        '小数据集训练',
+                        '过拟合风险高的任务',
+                        '需要强泛化能力的场景',
+                        '模型集成'
+                    ],
+                    performance: {
+                        accuracy: '99.0% on MNIST',
+                        parameters: '60K',
+                        flops: '3.2M',
+                        speed: '1.8ms/batch'
+                    }
+                }
+            },
+            {
+                category: '理论优化',
+                title: 'FP16LeNet',
+                file: 'LeNet-FP16orFP64.py',
+                details: ['混合精度', '性能平衡'],
+                extendedInfo: {
+                    architecture: {
+                        description: '使用FP16精度训练的LeNet版本，平衡计算效率和数值精度',
+                        layers: [
+                            'Conv1(6@28x28)[FP16] → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10)[FP16] → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC1(120)[FP16] → ReLU',
+                            'FC2(84)[FP16] → ReLU',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '内存占用减半',
+                        '计算速度提升',
+                        '数据传输效率高',
+                        'GPU利用率提升'
+                    ],
+                    disadvantages: [
+                        '数值范围受限',
+                        '精度可能损失',
+                        '需要缩放技术',
+                        '特定硬件支持'
+                    ],
+                    applications: [
+                        '大规模训练',
+                        'GPU加速场景',
+                        '内存受限环境',
+                        '实时推理'
+                    ],
+                    performance: {
+                        accuracy: '98.8% on MNIST',
+                        speedup: '1.8x',
+                        memory_saving: '50%',
+                        training_time: '-40%'
+                    }
+                }
+            },
+            {
+                category: '理论优化',
+                title: 'LeNet-Efficient',
+                file: 'LeNet-Efficient.py',
+                details: ['计算效率优化', '低内存占用'],
+                extendedInfo: {
+                    architecture: {
+                        description: '优化计算效率的理论改进版本，通过多种技术提高运算和内存效率',
+                        layers: [
+                            'Efficient Conv1(6@28x28) → ReLU',
+                            'Shared Memory Pool',
+                            'Fused Conv-Pool2',
+                            'Memory-Efficient FC',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '计算效率提升',
+                        '内存占用减少',
+                        '能耗优化',
+                        '适合资源受限硬件'
+                    ],
+                    disadvantages: [
+                        '实现复杂度高',
+                        '可移植性较差',
+                        '需要特定编译优化',
+                        '调试难度增加'
+                    ],
+                    applications: [
+                        '嵌入式系统',
+                        '移动设备',
+                        '边缘计算',
+                        '电池供电设备'
+                    ],
+                    performance: {
+                        accuracy: '98.9% on MNIST',
+                        memory_usage: '-65%',
+                        compute_efficiency: '+80%',
+                        energy_saving: '45%'
+                    }
+                }
+            },
+            // 跨域适应
+            {
+                category: '跨域适应',
+                title: 'CrossDomainLeNet',
+                file: 'Cross-Domain-LeNet.py',
+                details: ['领域自适应', '跨数据集'],
+                extendedInfo: {
+                    architecture: {
+                        description: '支持跨领域适应的LeNet变体，能够自适应迁移到不同领域的数据',
+                        layers: [
+                            'Feature Extractor',
+                            'Domain Adaptation Layer',
+                            'Gradient Reversal Layer',
+                            'Domain Classifier',
+                            'Task Classifier',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '跨领域迁移能力',
+                        '减少数据标注需求',
+                        '适应分布偏移',
+                        '提高泛化能力'
+                    ],
+                    disadvantages: [
+                        '训练过程复杂',
+                        '领域差异过大效果下降',
+                        '需要特殊优化器',
+                        '收敛难度增加'
+                    ],
+                    applications: [
+                        'MNIST → Fashion-MNIST',
+                        '合成数据迁移',
+                        '跨域分类',
+                        '少样本场景适应'
+                    ],
+                    performance: {
+                        source_accuracy: '99.0%',
+                        target_accuracy: '93.5%',
+                        domain_adaptation: '85%',
+                        parameters: '75K'
+                    }
+                }
+            },
+            {
+                category: '跨域适应',
+                title: 'DomainAdaptLeNet',
+                file: 'DomainAdaptLeNet.py',
+                details: ['专用领域适应', '对抗训练'],
+                extendedInfo: {
+                    architecture: {
+                        description: '专用于领域自适应任务的版本，通过对抗训练实现跨域特征学习',
+                        layers: [
+                            'Shared Feature Extractor',
+                            'Adversarial Domain Discriminator',
+                            'Feature Alignment Module',
+                            'Task-specific Classifier',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '无监督领域适应',
+                        '强对抗特征对齐',
+                        '减少领域差异',
+                        '不需要目标域标签'
+                    ],
+                    disadvantages: [
+                        '对抗训练不稳定',
+                        '超参数敏感',
+                        '训练收敛困难',
+                        '计算开销大'
+                    ],
+                    applications: [
+                        '跨数据集迁移',
+                        '风格转换分类',
+                        '模拟到真实迁移',
+                        '域泛化'
+                    ],
+                    performance: {
+                        source_accuracy: '99.1%',
+                        target_accuracy: '94.2%',
+                        adaptation_efficiency: '88%',
+                        parameters: '78K'
+                    }
+                }
+            },
+            {
+                category: '跨域适应',
+                title: 'LeNet-Transfer',
+                file: 'LeNet-Transfer.py',
+                details: ['迁移学习', '特征重用'],
+                extendedInfo: {
+                    architecture: {
+                        description: '面向迁移学习的LeNet优化版本，通过特征重用实现高效知识迁移',
+                        layers: [
+                            'Pretrained Feature Extractor',
+                            'Feature Adaptation Layers',
+                            'Fine-tuning Modules',
+                            'Task-specific Heads',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '快速适应新任务',
+                        '减少训练数据需求',
+                        '保留通用特征',
+                        '训练时间短'
+                    ],
+                    disadvantages: [
+                        '对源域依赖性高',
+                        '负迁移风险',
+                        '需要精心设计微调策略',
+                        '不适合差异极大的任务'
+                    ],
+                    applications: [
+                        '预训练模型部署',
+                        '小样本迁移',
+                        '跨任务学习',
+                        '多任务迁移'
+                    ],
+                    performance: {
+                        transfer_efficiency: '92%',
+                        finetuning_time: '-75%',
+                        target_accuracy: '96.8%',
+                        data_efficiency: '+85%'
+                    }
+                }
+            },
+            {
+                category: '跨域适应',
+                title: 'MultiDomainLeNet',
+                file: 'MultiDomainLeNet.py',
+                details: ['多领域适应', '领域对齐'],
+                extendedInfo: {
+                    architecture: {
+                        description: '支持多领域同时适应的变体，通过领域对齐和特征迁移实现跨域学习',
+                        layers: [
+                            'Shared Feature Extractor',
+                            'Domain-Specific Layers',
+                            'Domain Classifier',
+                            'Task Classifier',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '支持多领域适应',
+                        '特征迁移能力强',
+                        '领域泛化性好',
+                        '资源利用率高'
+                    ],
+                    disadvantages: [
+                        '训练复杂度高',
+                        '需要领域标签',
+                        '收敛速度较慢',
+                        '实现难度大'
+                    ],
+                    applications: [
+                        '跨域分类',
+                        '领域自适应',
+                        '迁移学习',
+                        '多源数据融合'
+                    ],
+                    performance: {
+                        accuracy: '98.7% on MNIST',
+                        parameters: '95K',
+                        flops: '6.5M',
+                        speed: '3.5ms/batch'
+                    }
+                }
+            },
+            // 数据增强
+            {
+                category: '数据增强',
+                title: 'DataAugmentedLeNet',
+                file: 'Data-Augmented-LeNet.py',
+                details: ['综合数据增强', '泛化能力提升'],
+                extendedInfo: {
+                    architecture: {
+                        description: '通过数据增强技术提升泛化能力的版本，集成多种增强方法',
+                        layers: [
+                            'Data Augmentation Pipeline',
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC Layers',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '泛化能力显著提升',
+                        '减轻过拟合',
+                        '数据利用率高',
+                        '鲁棒性增强'
+                    ],
+                    disadvantages: [
+                        '训练时间延长',
+                        '计算资源需求增加',
+                        '需要调整增强参数',
+                        '可能引入噪声'
+                    ],
+                    applications: [
+                        '小数据集训练',
+                        '医学图像分析',
+                        '目标检测',
+                        '细粒度分类'
+                    ],
+                    performance: {
+                        accuracy: '99.4% on MNIST',
+                        generalization: '+2.5%',
+                        data_efficiency: '+65%',
+                        training_time: '+35%'
+                    }
+                }
+            },
+            {
+                category: '数据增强',
+                title: 'Mixup-LeNet',
+                file: 'Mixup-LeNet.py',
+                details: ['样本混合', '标签平滑'],
+                extendedInfo: {
+                    architecture: {
+                        description: '应用Mixup数据增强方法的LeNet变体，通过样本线性插值和标签平滑提高鲁棒性',
+                        layers: [
+                            'Mixup Augmentation',
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC Layers',
+                            'Output with Soft Labels'
+                        ]
+                    },
+                    advantages: [
+                        '平滑决策边界',
+                        '提高鲁棒性',
+                        '减少过拟合',
+                        '对抗样本抵抗力增强'
+                    ],
+                    disadvantages: [
+                        '训练配置复杂',
+                        '混合参数敏感',
+                        '可能降低简单样本效果',
+                        '增加训练时间'
+                    ],
+                    applications: [
+                        '分类任务鲁棒性增强',
+                        '对抗样本防御',
+                        '噪声数据处理',
+                        '少样本学习增强'
+                    ],
+                    performance: {
+                        accuracy: '99.3% on MNIST',
+                        robustness: '+18%',
+                        adversarial_defense: '+25%',
+                        calibration: 'Improved'
+                    }
+                }
+            },
+            {
+                category: '数据增强',
+                title: 'CutMix-LeNet',
+                file: 'CutMix-LeNet.py',
+                details: ['区域混合', '局部替换'],
+                extendedInfo: {
+                    architecture: {
+                        description: '采用CutMix数据增强策略的版本，通过区域混合提升模型鲁棒性',
+                        layers: [
+                            'CutMix Augmentation',
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC Layers',
+                            'Output with Mixed Labels'
+                        ]
+                    },
+                    advantages: [
+                        '提高模型鲁棒性',
+                        '增强特征学习能力',
+                        '减少过拟合风险',
+                        '实现简单高效'
+                    ],
+                    disadvantages: [
+                        '需要调整混合比例',
+                        '可能引入噪声',
+                        '训练时间增加',
+                        '需要更多计算资源'
+                    ],
+                    applications: [
+                        '数据增强',
+                        '鲁棒性训练',
+                        '小样本学习',
+                        '对抗样本防御'
+                    ],
+                    performance: {
+                        accuracy: '99.2% on MNIST',
+                        parameters: '60K',
+                        flops: '3.2M',
+                        robustness: '+22%'
+                    }
+                }
+            },
+            {
+                category: '数据增强',
+                title: 'AugmentedLeNet',
+                file: 'AugmentedLeNet.py',
+                details: ['弹性变形', '几何变换'],
+                extendedInfo: {
+                    architecture: {
+                        description: '综合应用多种数据增强技术的版本，包括弹性变形、旋转、缩放等',
+                        layers: [
+                            'Augmentation Pipeline',
+                            'Conv1(6@28x28) → ReLU',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → ReLU',
+                            'MaxPool2(16@5x5)',
+                            'FC Layers',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '综合增强效果',
+                        '强泛化能力',
+                        '变换不变性增强',
+                        '少量数据高效利用'
+                    ],
+                    disadvantages: [
+                        '计算开销大',
+                        '超参数组合复杂',
+                        '可能过度扭曲样本',
+                        '训练时间延长'
+                    ],
+                    applications: [
+                        '有限数据集场景',
+                        '形变敏感任务',
+                        '姿态变化识别',
+                        '手写字符识别'
+                    ],
+                    performance: {
+                        accuracy: '99.5% on MNIST',
+                        data_efficiency: '+75%',
+                        generalization: '+3.2%',
+                        training_time: '+45%'
+                    }
+                }
+            },
+            // 目标检测
+            {
+                category: '目标检测',
+                title: 'LeNet-SSD',
+                file: 'LeNet-SSD.py',
+                details: ['单阶段检测', '多尺度特征'],
+                extendedInfo: {
+                    architecture: {
+                        description: '结合SSD框架的目标检测LeNet变体，通过多尺度特征图实现目标检测',
+                        layers: [
+                            'LeNet Backbone',
+                            'Extra Feature Layers',
+                            'Multi-scale Feature Maps',
+                            'Default Boxes',
+                            'Classification & Regression Heads'
+                        ]
+                    },
+                    advantages: [
+                        '单阶段检测速度快',
+                        '多尺度目标适应',
+                        '端到端训练',
+                        '实现相对简单'
+                    ],
+                    disadvantages: [
+                        '小目标检测能力弱',
+                        '特征表达能力有限',
+                        '默认框设计复杂',
+                        '训练数据需求大'
+                    ],
+                    applications: [
+                        '实时目标检测',
+                        '移动端视觉应用',
+                        '人脸检测',
+                        '工业缺陷检测'
+                    ],
+                    performance: {
+                        mAP: '82.5% on VOC',
+                        FPS: '50',
+                        parameters: '95K',
+                        model_size: '380KB'
+                    }
+                }
+            },
+            {
+                category: '目标检测',
+                title: 'LeNet-U-Net',
+                file: 'LeNet-U-Net.py',
+                details: ['编码器-解码器', '图像分割'],
+                extendedInfo: {
+                    architecture: {
+                        description: '应用于图像分割任务的U-Net结构LeNet版本，特别适用于医学图像分割',
+                        layers: [
+                            'Encoder: LeNet Downsampling Path',
+                            'Skip Connections',
+                            'Decoder: Upsampling Path',
+                            'Multi-scale Feature Fusion',
+                            'Segmentation Head'
+                        ]
+                    },
+                    advantages: [
+                        '精细分割能力',
+                        '小数据集效果好',
+                        '保留空间信息',
+                        '结构简洁高效'
+                    ],
+                    disadvantages: [
+                        '计算量较大',
+                        '内存占用高',
+                        '对大目标分割能力弱',
+                        '训练不稳定'
+                    ],
+                    applications: [
+                        '医学图像分割',
+                        '细胞检测',
+                        '器官轮廓提取',
+                        '卫星图像分析'
+                    ],
+                    performance: {
+                        dice_coefficient: '0.86',
+                        IoU: '0.83',
+                        parameters: '110K',
+                        inference_time: '5.2ms/image'
+                    }
+                }
+            },
+            {
+                category: '目标检测',
+                title: 'LeNet-Detection',
+                file: 'LeNet-Detection.py',
+                details: ['通用检测', '特征增强'],
+                extendedInfo: {
+                    architecture: {
+                        description: '面向通用目标检测任务的扩展版本，增强特征提取能力实现检测功能',
+                        layers: [
+                            'Enhanced LeNet Backbone',
+                            'Feature Pyramid Network',
+                            'Region Proposal Network',
+                            'ROI Pooling',
+                            'Detection Heads'
+                        ]
+                    },
+                    advantages: [
+                        '通用检测能力',
+                        '精确定位',
+                        '多目标同时检测',
+                        '特征表达丰富'
+                    ],
+                    disadvantages: [
+                        '两阶段检测速度慢',
+                        '结构复杂',
+                        '训练难度大',
+                        '计算资源需求高'
+                    ],
+                    applications: [
+                        '通用物体检测',
+                        '场景理解',
+                        '安全监控',
+                        '自动驾驶感知'
+                    ],
+                    performance: {
+                        mAP: '86.0% on VOC',
+                        FPS: '25',
+                        parameters: '180K',
+                        precision: '0.88'
+                    }
+                }
+            },
+            {
+                category: '目标检测',
+                title: 'LeNet-YOLO',
+                file: 'LeNet-YOLO.py',
+                details: ['YOLO思想', '实时检测'],
+                extendedInfo: {
+                    architecture: {
+                        description: '集成YOLO思想的目标检测LeNet变体，实现实时目标检测功能',
+                        layers: [
+                            'Backbone: LeNet Feature Extractor',
+                            'Detection Head',
+                            'Anchor Boxes',
+                            'Bounding Box Regression',
+                            'Class Prediction'
+                        ]
+                    },
+                    advantages: [
+                        '实时检测能力',
+                        '端到端训练',
+                        '计算效率高',
+                        '实现简单'
+                    ],
+                    disadvantages: [
+                        '小目标检测能力弱',
+                        '定位精度相对较低',
+                        '需要大量标注数据',
+                        '训练难度大'
+                    ],
+                    applications: [
+                        '实时目标检测',
+                        '视频监控',
+                        '自动驾驶',
+                        '工业检测'
+                    ],
+                    performance: {
+                        mAP: '85.5% on VOC',
+                        FPS: '45',
+                        parameters: '120K',
+                        flops: '8.5M'
+                    }
+                }
+            },
+            {
+                category: '目标检测',
+                title: 'CascadeLeNet-Det',
+                file: 'CascadeLeNet-Det.py',
+                details: ['级联检测', '高精度定位'],
+                extendedInfo: {
+                    architecture: {
+                        description: '级联式目标检测LeNet版本，通过多阶段检测头提高检测精度',
+                        layers: [
+                            'LeNet Feature Extractor',
+                            'Cascade Detection Stages',
+                            'Progressive IoU Thresholds',
+                            'Multi-stage Refinement',
+                            'Ensemble Outputs'
+                        ]
+                    },
+                    advantages: [
+                        '高精度检测',
+                        '递进式改进边界框',
+                        '减少误检率',
+                        '性能上限高'
+                    ],
+                    disadvantages: [
+                        '级联结构复杂',
+                        '推理速度慢',
+                        '训练难度高',
+                        '参数量大'
+                    ],
+                    applications: [
+                        '高精度目标检测',
+                        '精确测量',
+                        '医学影像分析',
+                        '密集目标检测'
+                    ],
+                    performance: {
+                        mAP: '88.5% on VOC',
+                        precision: '0.92',
+                        recall: '0.85',
+                        FPS: '18'
+                    }
+                }
+            },
+            // 小样本学习
+            {
+                category: '小样本学习',
+                title: 'ProtoNet-LeNet',
+                file: 'ProtoNet-LeNet.py',
+                details: ['原型网络', '基于距离学习'],
+                extendedInfo: {
+                    architecture: {
+                        description: '基于原型的小样本学习LeNet变体，通过原型表示和距离度量实现少样本分类',
+                        layers: [
+                            'LeNet Embedding Network',
+                            'Prototype Construction',
+                            'Distance Metric Learning',
+                            'Prototype Classification',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '少样本学习能力',
+                        '快速适应新类别',
+                        '特征嵌入高效',
+                        '无需微调'
+                    ],
+                    disadvantages: [
+                        '依赖良好的特征表示',
+                        '对原型计算敏感',
+                        '距离度量选择关键',
+                        '复杂场景性能下降'
+                    ],
+                    applications: [
+                        '小样本分类',
+                        '新类别快速识别',
+                        '数据稀缺场景',
+                        '交互式学习'
+                    ],
+                    performance: {
+                        '5-way 1-shot': '91.8%',
+                        '5-way 5-shot': '97.2%',
+                        'adaptation_speed': 'Fast',
+                        'parameters': '65K'
+                    }
+                }
+            },
+            {
+                category: '小样本学习',
+                title: 'ProtoLeNet',
+                file: 'ProtoLeNet.py',
+                details: ['简化原型网络', '高效嵌入'],
+                extendedInfo: {
+                    architecture: {
+                        description: '面向小样本识别的LeNet改进版本，优化原型计算和特征嵌入',
+                        layers: [
+                            'Simplified LeNet Encoder',
+                            'Embedding Space',
+                            'Class Prototypes',
+                            'Distance-based Classification',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '模型结构简洁',
+                        '计算效率高',
+                        '适应性强',
+                        '易于部署'
+                    ],
+                    disadvantages: [
+                        '嵌入空间维度受限',
+                        '表达能力有限',
+                        '复杂场景精度下降',
+                        '不适合细粒度任务'
+                    ],
+                    applications: [
+                        '资源受限环境',
+                        '实时小样本识别',
+                        '移动设备部署',
+                        '简单域小样本分类'
+                    ],
+                    performance: {
+                        'accuracy': '89.5%',
+                        '5-way 1-shot': '89.5%',
+                        '5-way 5-shot': '95.8%',
+                        'model_size': '260KB',
+                        'inference_time': '1.2ms/query'
+                    }
+                }
+            },
+            {
+                category: '小样本学习',
+                title: 'MetaLeNet',
+                file: 'MetaLeNet.py',
+                details: ['元学习', '快速适应'],
+                extendedInfo: {
+                    architecture: {
+                        description: '支持元学习的小样本学习版本，能够快速适应新任务',
+                        layers: [
+                            'Feature Extractor',
+                            'Meta-Learner',
+                            'Task-Specific Head',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '快速适应新任务',
+                        '小样本学习能力强',
+                        '泛化性能好',
+                        '迁移学习效率高'
+                    ],
+                    disadvantages: [
+                        '训练复杂度高',
+                        '需要大量元训练任务',
+                        '计算资源需求大',
+                        '实现难度大'
+                    ],
+                    applications: [
+                        '小样本分类',
+                        '快速适应新任务',
+                        '增量学习',
+                        '持续学习'
+                    ],
+                    performance: {
+                        '5-way 1-shot': '92.5%',
+                        '5-way 5-shot': '97.8%',
+                        'parameters': '85K',
+                        'flops': '5.2M'
+                    }
+                }
+            },
+            {
+                category: '小样本学习',
+                title: 'MatchingLeNet',
+                file: 'MatchingLeNet.py',
+                details: ['度量匹配', '注意力加权'],
+                extendedInfo: {
+                    architecture: {
+                        description: '基于度量匹配的小样本学习LeNet变体，使用注意力机制加权样本相似度',
+                        layers: [
+                            'LeNet Embedding Network',
+                            'Attention Module',
+                            'Cosine Distance Matching',
+                            'Weighted Nearest Neighbor',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '注意力引导匹配',
+                        '关注关键特征',
+                        '忽略噪声区域',
+                        '适应不同任务特点'
+                    ],
+                    disadvantages: [
+                        '注意力机制复杂',
+                        '计算开销增加',
+                        '对支持集质量敏感',
+                        '训练不稳定'
+                    ],
+                    applications: [
+                        '复杂场景小样本分类',
+                        '细粒度识别',
+                        '目标检测小样本学习',
+                        '视觉关系理解'
+                    ],
+                    performance: {
+                        '5-way 1-shot': '93.5%',
+                        '5-way 5-shot': '98.2%',
+                        'attention_efficiency': 'High',
+                        'parameters': '92K'
+                    }
+                }
+            },
+            // 生成对抗
+            {
+                category: '生成对抗',
+                title: 'LeNet-GAN',
+                file: 'LeNet-GAN.py',
+                details: ['生成式对抗', '数据增强'],
+                extendedInfo: {
+                    architecture: {
+                        description: '与GAN结合的生成式LeNet模型，可用于数据增强和半监督学习',
+                        layers: [
+                            'Generator: Reverse LeNet',
+                            'Discriminator: LeNet Based',
+                            'Adversarial Training',
+                            'Feature Matching',
+                            'Classification Head'
+                        ]
+                    },
+                    advantages: [
+                        '数据生成能力',
+                        '半监督学习',
+                        '特征学习改进',
+                        '数据增强'
+                    ],
+                    disadvantages: [
+                        '训练不稳定',
+                        '模式崩溃风险',
+                        '超参数敏感',
+                        '收敛难度大'
+                    ],
+                    applications: [
+                        '数据增强',
+                        '半监督学习',
+                        '图像生成',
+                        '异常检测'
+                    ],
+                    performance: {
+                        'generation_quality': '0.82 FID',
+                        'semi_supervised_acc': '96.8%',
+                        'unlabeled_utilization': '75%',
+                        'parameters': '150K'
+                    }
+                }
+            },
+            {
+                category: '生成对抗',
+                title: 'LeNet-in-Reinforcement-Learning',
+                file: 'LeNet-in-Reinforcement-Learning.py',
+                details: ['强化学习', '视觉策略'],
+                extendedInfo: {
+                    architecture: {
+                        description: '集成强化学习的LeNet变体，作为视觉输入的策略网络',
+                        layers: [
+                            'Vision Encoder: LeNet',
+                            'Feature Embedding',
+                            'Policy Network',
+                            'Value Network',
+                            'Action Output'
+                        ]
+                    },
+                    advantages: [
+                        '视觉策略学习',
+                        '端到端训练',
+                        '感知-行动结合',
+                        '适应性强'
+                    ],
+                    disadvantages: [
+                        '样本效率低',
+                        '训练不稳定',
+                        '奖励设计复杂',
+                        '超参数敏感'
+                    ],
+                    applications: [
+                        '机器人视觉控制',
+                        '自动驾驶',
+                        '游戏AI',
+                        '视觉导航'
+                    ],
+                    performance: {
+                        'success_rate': '85%',
+                        'sample_efficiency': 'Medium',
+                        'convergence_speed': 'Slow',
+                        'robustness': 'Good'
+                    }
+                }
+            },
+            {
+                category: '生成对抗',
+                title: 'LeNet-VAE',
+                file: 'LeNet-VAE.py',
+                details: ['变分自编码器', '特征解耦'],
+                extendedInfo: {
+                    architecture: {
+                        description: '变分自编码器结构的LeNet生成版本，能够学习数据分布并生成新样本',
+                        layers: [
+                            'Encoder: LeNet Feature Extractor',
+                            'Latent Space',
+                            'Decoder',
+                            'Reconstruction Head'
+                        ]
+                    },
+                    advantages: [
+                        '生成高质量样本',
+                        '学习数据分布',
+                        '特征解耦能力强',
+                        '可用于数据增强'
+                    ],
+                    disadvantages: [
+                        '训练难度大',
+                        '生成样本可能模糊',
+                        '计算开销大',
+                        '需要精心调参'
+                    ],
+                    applications: [
+                        '数据生成',
+                        '特征学习',
+                        '异常检测',
+                        '数据增强'
+                    ],
+                    performance: {
+                        'reconstruction_loss': '0.012',
+                        'generation_quality': '0.85',
+                        'parameters': '150K',
+                        'flops': '10.5M',
+                        'memory': '300KB'
+                    }
+                }
+            },
+            {
+                category: '生成对抗',
+                title: 'ConditionalLeNet-GAN',
+                file: 'ConditionalLeNet-GAN.py',
+                details: ['条件生成', '类别指导'],
+                extendedInfo: {
+                    architecture: {
+                        description: '基于条件GAN的LeNet变体，能够生成特定类别的样本',
+                        layers: [
+                            'Conditional Generator',
+                            'Class Embedding',
+                            'LeNet-based Discriminator',
+                            'Adversarial Training',
+                            'Class Conditioning'
+                        ]
+                    },
+                    advantages: [
+                        '控制生成内容',
+                        '类别引导生成',
+                        '生成样本质量高',
+                        '可用于分类增强'
+                    ],
+                    disadvantages: [
+                        '训练难度增加',
+                        '条件嵌入复杂',
+                        '模式崩溃风险',
+                        '计算资源需求大'
+                    ],
+                    applications: [
+                        '类别引导生成',
+                        '数据增强',
+                        '类别均衡',
+                        '半监督学习'
+                    ],
+                    performance: {
+                        'class_accuracy': '0.92',
+                        'generation_quality': '0.78 FID',
+                        'parameters': '165K',
+                        'condition_control': 'High'
+                    }
+                }
+            },
+            {
+                category: '生成对抗',
+                title: 'LeNet-CycleGAN',
+                file: 'LeNet-CycleGAN.py',
+                details: ['循环一致性', '域迁移'],
+                extendedInfo: {
+                    architecture: {
+                        description: '基于CycleGAN的LeNet变体，用于不同图像域之间的转换',
+                        layers: [
+                            'Generator A→B: LeNet-based',
+                            'Generator B→A: LeNet-based',
+                            'Discriminator A & B',
+                            'Cycle Consistency Loss',
+                            'Identity Mapping'
+                        ]
+                    },
+                    advantages: [
+                        '无配对数据训练',
+                        '保持域特征',
+                        '循环一致性',
+                        '双向转换'
+                    ],
+                    disadvantages: [
+                        '训练不稳定',
+                        '需要大量计算资源',
+                        '风格转换有限',
+                        '超参数敏感'
+                    ],
+                    applications: [
+                        '风格转换',
+                        '域适应',
+                        '图像翻译',
+                        '数据增强'
+                    ],
+                    performance: {
+                        'cycle_consistency': 'High',
+                        'style_transfer_quality': '0.85',
+                        'parameters': '210K',
+                        'inference_time': '8.5ms/image'
+                    }
+                }
+            },
+            // 部署优化
+            {
+                category: '部署优化',
+                title: 'QuantizedLeNet-Tiny',
+                file: 'QuantizedLeNet-Tiny.py',
+                details: ['极致量化', '超轻量级'],
+                extendedInfo: {
+                    architecture: {
+                        description: '极致量化版本的LeNet部署模型，通过多种量化技术实现超轻量级部署',
+                        layers: [
+                            'Conv1(4@28x28) → INT8',
+                            'MaxPool1(4@14x14)',
+                            'Conv2(8@10x10) → INT8',
+                            'MaxPool2(8@5x5)',
+                            'FC1(60) → INT8',
+                            'FC2(42) → INT8',
+                            'Output(10)'
+                        ]
+                    },
+                    advantages: [
+                        '模型体积极小',
+                        '计算效率极高',
+                        '内存占用极低',
+                        '适合边缘设备'
+                    ],
+                    disadvantages: [
+                        '精度损失较大',
+                        '需要特殊硬件支持',
+                        '训练过程复杂',
+                        '调试难度大'
+                    ],
+                    applications: [
+                        '边缘设备部署',
+                        '超低功耗场景',
+                        '实时推理',
+                        '资源极度受限环境'
+                    ],
+                    performance: {
+                        'accuracy': '97.5% on MNIST',
+                        'parameters': '8K',
+                        'flops': '0.8M',
+                        'speed': '0.3ms/batch',
+                        'memory': '32KB',
+                        'model_size': '16KB'
+                    }
+                }
+            },
+            {
+                category: '部署优化',
+                title: 'LeNet-for-Edge-Computing',
+                file: 'LeNet-for-Edge-Computing.py',
+                details: ['边缘计算', '低功耗'],
+                extendedInfo: {
+                    architecture: {
+                        description: '专为边缘计算优化的LeNet变体，平衡性能和功耗',
+                        layers: [
+                            'Efficient Conv1(4@28x28)',
+                            'Pooling',
+                            'Efficient Conv2(8@10x10)',
+                            'Pooling',
+                            'Lightweight FC',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '低功耗',
+                        '边缘设备友好',
+                        '实时推理',
+                        '小型化'
+                    ],
+                    disadvantages: [
+                        '精度略有损失',
+                        '特征提取能力有限',
+                        '模型表达力受限',
+                        '复杂场景性能下降'
+                    ],
+                    applications: [
+                        '边缘设备部署',
+                        'IoT应用',
+                        '电池供电设备',
+                        '实时视觉应用'
+                    ],
+                    performance: {
+                        'accuracy': '98.5% on MNIST',
+                        'power_consumption': '150mW',
+                        'memory_footprint': '75KB',
+                        'inference_time': '0.8ms/image'
+                    }
+                }
+            },
+            {
+                category: '部署优化',
+                title: 'LeNet-FP16orFP64',
+                file: 'LeNet-FP16orFP64.py',
+                details: ['混合精度', '自适应精度'],
+                extendedInfo: {
+                    architecture: {
+                        description: '能够动态调整计算精度的LeNet版本，根据任务需求在FP16和更高精度之间切换',
+                        layers: [
+                            'Conv1(6@28x28) → Dynamic Precision',
+                            'MaxPool1(6@14x14)',
+                            'Conv2(16@10x10) → Dynamic Precision',
+                            'MaxPool2(16@5x5)',
+                            'FC Layers → Dynamic Precision',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '精度动态适应',
+                        '资源利用灵活',
+                        '性能与精度平衡',
+                        '适应不同硬件'
+                    ],
+                    disadvantages: [
+                        '实现复杂',
+                        '测试要求高',
+                        '精度控制难度大',
+                        '需要特殊硬件支持'
+                    ],
+                    applications: [
+                        '动态资源环境',
+                        '精度敏感场景',
+                        '混合平台部署',
+                        '服务器到移动端适配'
+                    ],
+                    performance: {
+                        'accuracy_fp16': '98.7%',
+                        'accuracy_fp32': '99.0%',
+                        'speedup_fp16': '1.8x',
+                        'memory_saving_fp16': '50%'
+                    }
+                }
+            },
+            {
+                category: '部署优化',
+                title: 'LeNet-Edge',
+                file: 'LeNet-Edge.py',
+                details: ['超低功耗', '硬件优化'],
+                extendedInfo: {
+                    architecture: {
+                        description: '面向极低功耗场景的LeNet变体，采用硬件感知设计',
+                        layers: [
+                            'Sparse Conv1(4@28x28)',
+                            'Hardware-Optimized Pooling',
+                            'Sparse Conv2(8@12x12)',
+                            'Efficient Pooling',
+                            'Low-power FC',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '超低功耗',
+                        '电池寿命优化',
+                        '硬件友好设计',
+                        '小型化'
+                    ],
+                    disadvantages: [
+                        '特定硬件依赖',
+                        '通用性降低',
+                        '优化空间有限',
+                        '开发复杂度增加'
+                    ],
+                    applications: [
+                        '可穿戴设备',
+                        '传感器网络',
+                        '极限边缘计算',
+                        '长寿命电池设备'
+                    ],
+                    performance: {
+                        'accuracy': '97.8% on MNIST',
+                        'power_usage': '45mW',
+                        'battery_life': '100+ hours',
+                        'model_size': '60KB'
+                    }
+                }
+            },
+            {
+                category: '部署优化',
+                title: 'EdgeLeNet',
+                file: 'EdgeLeNet.py',
+                details: ['高效部署', '传感器优化'],
+                extendedInfo: {
+                    architecture: {
+                        description: '专注于边缘设备高效部署的LeNet优化版本',
+                        layers: [
+                            'Hardware-aware Conv1(4@28x28)',
+                            'Efficient Pooling',
+                            'Fused Conv-Pool',
+                            'Low-bit FC',
+                            'Output'
+                        ]
+                    },
+                    advantages: [
+                        '部署友好',
+                        '高吞吐量',
+                        '响应速度快',
+                        '高效资源利用'
+                    ],
+                    disadvantages: [
+                        '专用优化难迁移',
+                        '可扩展性有限',
+                        '复杂场景适应性差',
+                        '开发周期长'
+                    ],
+                    applications: [
+                        '摄像头实时处理',
+                        '传感器数据分析',
+                        '移动设备',
+                        '工业物联网'
+                    ],
+                    performance: {
+                        'accuracy': '98.2% on MNIST',
+                        'throughput': '1000+ FPS',
+                        'latency': '0.6ms',
+                        'memory_usage': '80KB'
+                    }
+                }
+            }
+        ];
+
+        function renderModelDetails(model) {
+            // 如果没有 extendedInfo，返回简单视图
+            if (!model.extendedInfo) {
+                return `
+                    <div class="model-details-container">
+                        <div class="model-section">
+                            <div class="section-title">基本信息</div>
+                            <div class="tech-details">
+                                ${model.details.map(detail => `<p>${detail}</p>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 如果有 extendedInfo，返回完整视图
+            return `
+                <div class="model-details-container">
+                    <div class="model-section">
+                        <div class="section-title">模型架构</div>
+                        <p>${model.extendedInfo.architecture.description}</p>
+                        <div class="architecture-layers">
+                            ${model.extendedInfo.architecture.layers.map(layer => 
+                                `<div class="layer-item">${layer}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="model-section">
+                        <div class="section-title">性能指标</div>
+                        <div class="performance-grid">
+                            ${Object.entries(model.extendedInfo.performance).map(([key, value]) =>
+                                `<div class="performance-item">
+                                    <div class="metric-label">${key}</div>
+                                    <div class="metric-value">${value}</div>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="model-section">
+                        <div class="section-title">优势</div>
+                        <ul class="advantages-list">
+                            ${model.extendedInfo.advantages.map(adv =>
+                                `<li>${adv}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="model-section">
+                        <div class="section-title">局限性</div>
+                        <ul class="disadvantages-list">
+                            ${model.extendedInfo.disadvantages.map(dis =>
+                                `<li>${dis}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="model-section">
+                        <div class="section-title">应用场景</div>
+                        <div class="applications-list">
+                            ${model.extendedInfo.applications.map(app =>
+                                `<div class="application-item">${app}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="model-section">
+                        <div class="section-title">示例代码</div>
+                        <pre class="code-block"><code>${model.extendedInfo.codeExample}</code></pre>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderModels(models) {
+            const container = document.getElementById('modelsContainer');
+            
+            // 按分类对模型进行分组
+            const modelsByCategory = {};
+            models.forEach(model => {
+                if (!modelsByCategory[model.category]) {
+                    modelsByCategory[model.category] = [];
+                }
+                modelsByCategory[model.category].push(model);
+            });
+            
+            // 清空容器
+            container.innerHTML = '';
+            
+            // 为每个分类创建一个区域
+            Object.keys(modelsByCategory).forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-section';
+                categoryDiv.setAttribute('data-category', category);
+                
+                // 添加分类标题
+                const categoryTitle = document.createElement('h2');
+                categoryTitle.innerHTML = `
+                    <span>${category}</span>
+                    <span class="category-count">(${modelsByCategory[category].length})</span>
+                `;
+                
+                // 添加展开/折叠功能
+                categoryTitle.addEventListener('click', () => {
+                    categoryDiv.classList.toggle('collapsed');
+                });
+                
+                categoryDiv.appendChild(categoryTitle);
+                
+                // 添加该分类下的所有模型卡片
+                modelsByCategory[category].forEach(model => {
+                    const card = document.createElement('div');
+                    card.className = 'model-card';
+                    card.setAttribute('data-category', model.category);
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            ${model.file !== model.title + '.py' ? model.title + ' (' + model.file.replace('.py','') + ')' : model.title}
+                        </div>
+                        <div class="card-content">
+                            ${renderModelDetails(model)}
+                        </div>
+                    `;
+                    
+                    // 添加卡片点击展开/折叠功能
+                    card.querySelector('.card-header').addEventListener('click', (e) => {
+                        e.stopPropagation();  // 防止触发分类的折叠
+                        card.querySelector('.card-content').classList.toggle('active');
+                    });
+                    
+                    categoryDiv.appendChild(card);
+                });
+                
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function initFilters() {
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const category = tag.dataset.category;
+                    
+                    // 更新激活状态
+                    document.querySelectorAll('.filter-tag').forEach(t => 
+                        t.classList.toggle('active', t === tag));
+                    
+                    // 显示/隐藏相应分类
+                    document.querySelectorAll('.category-section').forEach(section => {
+                        if (category === 'all') {
+                            section.style.display = 'block';  // 显示所有分类
+                        } else {
+                            section.style.display = 
+                                section.getAttribute('data-category') === category 
+                                    ? 'block' 
+                                    : 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderModels(models);
+            initFilters();
+            
+            // 初始化时显示所有分类
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 搜索功能
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('.model-card').forEach(card => {
+                    const title = card.querySelector('.card-header').textContent.toLowerCase();
+                    card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
