@@ -1,0 +1,12 @@
+# 忽略 .idea 文件夹
+.idea/
+
+# 忽略 .vscode 文件夹
+.vscode/
+
+# 忽略 .venv 文件夹
+.venv/
+
+# 忽略 __pycache__ 文件夹
+__pycache__/
+
